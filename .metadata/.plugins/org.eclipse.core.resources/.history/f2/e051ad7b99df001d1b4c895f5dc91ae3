@@ -1,0 +1,224 @@
+package vku.udn.common;
+
+import java.security.Permission;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+
+import vku.udn.model.Department;
+import vku.udn.model.Employee;
+import vku.udn.service.ConnectMysql;
+
+//load dữ liêu từ db lên
+public class EmployeeDao {
+
+	// kết nối với mysql
+	Connection conn = null;
+
+	// ném câu lệnh sang
+	PreparedStatement ps = null;
+
+	// nhận kết quả trả về
+	ResultSet rs = null;
+
+	// khai bao hàm trả về tất cả dữ liệu có trong db
+	public List<Employee> getAllEmployee() {
+		List<Employee> li = new ArrayList<>();
+
+		String query = "select * from employee";
+		try {
+			conn = new ConnectMysql().getConnection();
+			ps = conn.prepareStatement(query);
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				li.add(new Employee(rs.getInt(1),rs.getString(2),rs.getInt(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getInt(9),rs.getString(10),rs.getString(11),rs.getString(12),rs.getString(13),rs.getString(14)));
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return li;
+
+	}
+
+	public List<Department> getAllDepartment() {
+		ArrayList<Department> list = new ArrayList<>();
+
+		String query = "select * from department";
+
+		try {
+			conn = new ConnectMysql().getConnection();
+			ps = conn.prepareStatement(query);
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				list.add(new Department(rs.getString(1), rs.getString(2), rs.getString(3)));
+				
+				
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return list;
+
+	}
+
+	public void AddDepartmnet(String department_id, String department_name, String mota) {
+		String query = "insert into \n"
+				+ "department\n"
+				+ "values(?,?,?)";
+		
+		try {
+			conn = new ConnectMysql().getConnection();
+			ps = conn.prepareStatement(query);
+			ps.setString(1, department_id);
+			ps.setString(2, department_name);
+			ps.setString(3, mota);
+			
+			ps.executeUpdate();
+
+	
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+	}
+
+	public void AddEmployee(String employee_name, String gender, String date_of_birth, String identity, String address
+	) {
+		String query = "insert into  \n"
+				+ "employee\n"
+				+ "values(?,?,?,?,?)";
+		try {
+			conn = new ConnectMysql().getConnection();
+			ps = conn.prepareStatement(query);
+			
+			ps.setString(1, employee_name);
+			if (gender.equals("male")) {
+				ps.setString(2, "1");
+			} else {
+				ps.setString(2, "0");
+			}
+
+			ps.setString(3, date_of_birth);
+			ps.setString(4, identity);
+			ps.setString(5, address);
+
+			ps.executeUpdate();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	public void DeleteEmployee(String id) {
+		String query = "delete from employee " + " where employee_id =?";
+		try {
+			conn = new ConnectMysql().getConnection();
+			ps = conn.prepareStatement(query);
+			ps.setString(1, id);
+			ps.executeUpdate();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	public void DeleteDepartment(String id) {
+		String query = "delete from department " + " where department_id = ? ";
+		try {
+			conn = new ConnectMysql().getConnection();
+			ps = conn.prepareStatement(query);
+			ps.setString(1, id);
+			ps.executeUpdate();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	public Employee getEmployeeById(String id) {
+
+		String query = "SELECT * FROM employee" + "where employee_id = ? ";
+		try {
+			conn = new ConnectMysql().getConnection();
+			ps = conn.prepareStatement(query);
+			ps.setString(1, id);
+			rs = ps.executeQuery();
+		
+			while (rs.next()) {
+				return new Employee(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getString(4), rs.getString(5),
+						rs.getString(6), rs.getString(7), rs.getString(8), rs.getInt(9), rs.getString(10),
+						rs.getString(11), rs.getString(12), rs.getString(13), rs.getString(14));
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return null;
+
+	}
+	public Department getDepartmentById(String id) {
+
+		String query = "select * from department\n"
+				+"where department_id = ?";
+		
+		try {
+			conn = new ConnectMysql().getConnection();
+			System.out.println(conn);
+			ps = conn.prepareStatement(query);
+			ps.setString(1,id);
+			rs = ps.executeQuery();	
+			while (rs.next()) {
+				return new Department(rs.getString(1),
+						rs.getString(2),
+						rs.getString(3));
+			}
+			System.out.println(rs);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return null;
+
+	}
+	
+	public void updateDepartment(String department_id, String department_name, String mota) {
+		String query = "UPDATE 'department' SET 'department_name' = ?,'mota' = ? where ('department_id' = ?)";
+				
+		
+		try {
+			conn = new ConnectMysql().getConnection();
+			
+			ps = conn.prepareStatement(query);
+		
+			ps.setNString(1, department_name);
+			ps.setString(2, mota);
+			ps.setString(3, "0");
+			
+			ps.executeUpdate();
+			
+			
+	
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+	}
+
+	public static void main(String[] args) {
+
+		EmployeeDao dao = new EmployeeDao();
+		List<Department> li = dao.getAllDepartment();
+		List<Employee> list = dao.getAllEmployee();
+		
+		for (Department e : li) {
+			System.out.println(" Lỗi  " + e);
+		}
+		for (Employee o : list) {
+//			System.out.println("thong tin  " + o);
+		}
+	}
+}

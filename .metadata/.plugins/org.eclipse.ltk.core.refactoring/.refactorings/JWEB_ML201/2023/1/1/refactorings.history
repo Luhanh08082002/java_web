@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move &apos;pom.xml&apos; to &apos;JWEB_ML201&apos;" description="Move &apos;pom.xml&apos; to &apos;JWEB_ML201&apos;" destination="/JWEB_ML201" element1="target/m2e-wtp/web-resources/META-INF/maven/vku.udn/JWEB_ML201/pom.xml" flags="7" id="org.eclipse.ltk.core.refactoring.move.resources" resources="1" stamp="1672727425804" updateReferences="true"/>
+</session>
